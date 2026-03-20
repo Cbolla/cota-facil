@@ -1,0 +1,336 @@
+[
+  {
+    "id": 1,
+    "name": "Mercado SuperTop",
+    "inventory": [
+      {
+        "name": "Sabão em pó Omo 1kg",
+        "barcode": "123",
+        "price": 15.9
+      },
+      {
+        "name": "Detergente Ipê 500ml",
+        "barcode": "456",
+        "price": 2.5
+      },
+      {
+        "name": "Camiseta Básica G",
+        "barcode": "789",
+        "price": 29.9
+      },
+      {
+        "name": "Arroz 5kg",
+        "barcode": "001",
+        "price": 24.9
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Varejão do Preço",
+    "inventory": [
+      {
+        "name": "Sabão em pó Omo 1kg",
+        "barcode": "123",
+        "price": 14.8
+      },
+      {
+        "name": "Detergente Ipê 500ml",
+        "barcode": "456",
+        "price": 2.75
+      },
+      {
+        "name": "Camiseta Básica G",
+        "barcode": "789",
+        "price": 25
+      },
+      {
+        "name": "Arroz 5kg",
+        "barcode": "001",
+        "price": 26.5
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Atacadão Econômico",
+    "inventory": [
+      {
+        "name": "Sabão em pó Omo 1kg",
+        "barcode": "123",
+        "price": 16.2
+      },
+      {
+        "name": "Detergente Ipê 500ml",
+        "barcode": "456",
+        "price": 2.4
+      },
+      {
+        "name": "Camiseta Básica G",
+        "barcode": "789",
+        "price": 27
+      },
+      {
+        "name": "Arroz 5kg",
+        "barcode": "001",
+        "price": 23.9
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "teste",
+    "inventory": [
+      {
+        "name": "Arroz Agulhinha Tio João 5kg",
+        "barcode": "001122334",
+        "price": 28.9
+      },
+      {
+        "name": "Feijão Carioca Camil 1kg",
+        "barcode": "002233445",
+        "price": 8.45
+      },
+      {
+        "name": "Açúcar Refinado União 1kg",
+        "barcode": "003344556",
+        "price": 4.2
+      },
+      {
+        "name": "Café Torrado Pilão 500g",
+        "barcode": "004455667",
+        "price": 18.9
+      },
+      {
+        "name": "Macarrão Espaguete Galo 500g",
+        "barcode": "005566778",
+        "price": 3.5
+      },
+      {
+        "name": "Óleo de Soja Liza 900ml",
+        "barcode": "006677889",
+        "price": 6.3
+      },
+      {
+        "name": "Leite Integral Itambé 1L",
+        "barcode": "007788990",
+        "price": 5.4
+      },
+      {
+        "name": "Manteiga Com Sal Aviação 200g",
+        "barcode": "008899001",
+        "price": 12.5
+      },
+      {
+        "name": "Iogurte Grego Danone 100g",
+        "barcode": "009900112",
+        "price": 3.2
+      },
+      {
+        "name": "Pão de Forma Pullman 500g",
+        "barcode": "010011223",
+        "price": 7.9
+      },
+      {
+        "name": "Biscoito Recheado Trakinas 126g",
+        "barcode": "011011334",
+        "price": 2.5
+      },
+      {
+        "name": "Suco de Laranja Del Valle 1L",
+        "barcode": "012011445",
+        "price": 9.3
+      },
+      {
+        "name": "Refrigerante Coca-Cola 2L",
+        "barcode": "013011556",
+        "price": 11.5
+      },
+      {
+        "name": "Cerveja Skol Lata 350ml",
+        "barcode": "014011667",
+        "price": 3.8
+      },
+      {
+        "name": "Azeite de Oliva Extra Virgem Gallo 500ml",
+        "barcode": "015011778",
+        "price": 35.9
+      },
+      {
+        "name": "Achocolatado em Pó Nescau 400g",
+        "barcode": "016011889",
+        "price": 9.4
+      },
+      {
+        "name": "Maionese Hellmann's 500g",
+        "barcode": "017011990",
+        "price": 10.2
+      },
+      {
+        "name": "Molho de Tomate Pomarola 340g",
+        "barcode": "018011111",
+        "price": 2.9
+      },
+      {
+        "name": "Milho para Pipoca Yoki 500g",
+        "barcode": "019011212",
+        "price": 5.5
+      },
+      {
+        "name": "Atum em Pedaços Gomes da Costa 170g",
+        "barcode": "020011313",
+        "price": 7.4
+      },
+      {
+        "name": "Sabão em Pó Omo Lavagem Perfeita 1.6kg",
+        "barcode": "123456789",
+        "price": 25.9
+      },
+      {
+        "name": "Amaciante Downy Concentrado 500ml",
+        "barcode": "123123123",
+        "price": 14.5
+      },
+      {
+        "name": "Detergente Líquido Ipê Neutro 500ml",
+        "barcode": "456789123",
+        "price": 2.1
+      },
+      {
+        "name": "Desinfetante Pinho Sol 500ml",
+        "barcode": "444555666",
+        "price": 8.9
+      },
+      {
+        "name": "Limpador Multiuso Veja 500ml",
+        "barcode": "777888999",
+        "price": 6.2
+      },
+      {
+        "name": "Sabão em Barra Ipê 5 unid",
+        "barcode": "888111222",
+        "price": 11.3
+      },
+      {
+        "name": "Esponja de Aço Bombril 8 unid",
+        "barcode": "999222333",
+        "price": 2.45
+      },
+      {
+        "name": "Papel Higiênico Neve 12 rolos",
+        "barcode": "000333444",
+        "price": 24.8
+      },
+      {
+        "name": "Sabonete Rexona 84g",
+        "barcode": "000444555",
+        "price": 2.15
+      },
+      {
+        "name": "Creme Dental Colgate 90g",
+        "barcode": "000555666",
+        "price": 3.9
+      },
+      {
+        "name": "Shampoo Dove Reconstrução 400ml",
+        "barcode": "000666777",
+        "price": 16.4
+      },
+      {
+        "name": "Condicionador Dove Reconstrução 400ml",
+        "barcode": "000777888",
+        "price": 18.2
+      },
+      {
+        "name": "Desodorante Rexona Aerosol 150ml",
+        "barcode": "000888999",
+        "price": 14.9
+      },
+      {
+        "name": "Fio Dental Colgate 50m",
+        "barcode": "000999000",
+        "price": 9.1
+      },
+      {
+        "name": "Fralda Pampers Confort Sec G 32 unid",
+        "barcode": "111222333",
+        "price": 45.9
+      },
+      {
+        "name": "Absorvente Always Com Abas 8 unid",
+        "barcode": "222333444",
+        "price": 6.5
+      },
+      {
+        "name": "Lava Roupas Líquido Ariel 2L",
+        "barcode": "333444555",
+        "price": 32.1
+      },
+      {
+        "name": "Inseticida SBP Aerosol 300ml",
+        "barcode": "444555666",
+        "price": 15.8
+      },
+      {
+        "name": "Saco de Lixo Embalixo 50L 10 unid",
+        "barcode": "555666777",
+        "price": 9.9
+      },
+      {
+        "name": "Cândida/Alvejante Qboa 2L",
+        "barcode": "666777888",
+        "price": 6.5
+      },
+      {
+        "name": "Queijo Mussarela Fatiada 200g",
+        "barcode": "777888999",
+        "price": 12.9
+      },
+      {
+        "name": "Presunto Fatiado Sadia 200g",
+        "barcode": "888999000",
+        "price": 8.5
+      },
+      {
+        "name": "Peito de Peru Fatiado Seara 200g",
+        "barcode": "999000111",
+        "price": 14.3
+      },
+      {
+        "name": "Filé de Frango Sadia 1kg",
+        "barcode": "111000222",
+        "price": 22.9
+      },
+      {
+        "name": "Carne Moída Patinho 500g",
+        "barcode": "222000333",
+        "price": 25.4
+      },
+      {
+        "name": "Salsicha Hot Dog Seara 500g",
+        "barcode": "333000444",
+        "price": 8.9
+      },
+      {
+        "name": "Pizza Congelada Sadia Calabresa 460g",
+        "barcode": "444000555",
+        "price": 15.2
+      },
+      {
+        "name": "Lasanha Congelada Seara Bolonhesa 600g",
+        "barcode": "555000666",
+        "price": 16.8
+      },
+      {
+        "name": "Hambúrguer de Carne Seara 12 unid",
+        "barcode": "666000777",
+        "price": 19.9
+      },
+      {
+        "name": "Batata Palito Congelada McCain 400g",
+        "barcode": "777000888",
+        "price": 14.5
+      }
+    ]
+  }
+]

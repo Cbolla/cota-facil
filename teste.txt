@@ -1,0 +1,50 @@
+Arroz Agulhinha Tio João 5kg;001122334;28.90
+Feijão Carioca Camil 1kg;002233445;8.45
+Açúcar Refinado União 1kg;003344556;4.20
+Café Torrado Pilão 500g;004455667;18.90
+Macarrão Espaguete Galo 500g;005566778;3.50
+Óleo de Soja Liza 900ml;006677889;6.30
+Leite Integral Itambé 1L;007788990;5.40
+Manteiga Com Sal Aviação 200g;008899001;12.50
+Iogurte Grego Danone 100g;009900112;3.20
+Pão de Forma Pullman 500g;010011223;7.90
+Biscoito Recheado Trakinas 126g;011011334;2.50
+Suco de Laranja Del Valle 1L;012011445;9.30
+Refrigerante Coca-Cola 2L;013011556;11.50
+Cerveja Skol Lata 350ml;014011667;3.80
+Azeite de Oliva Extra Virgem Gallo 500ml;015011778;35.90
+Achocolatado em Pó Nescau 400g;016011889;9.40
+Maionese Hellmann's 500g;017011990;10.20
+Molho de Tomate Pomarola 340g;018011111;2.90
+Milho para Pipoca Yoki 500g;019011212;5.50
+Atum em Pedaços Gomes da Costa 170g;020011313;7.40
+Sabão em Pó Omo Lavagem Perfeita 1.6kg;123456789;25.90
+Amaciante Downy Concentrado 500ml;123123123;14.50
+Detergente Líquido Ipê Neutro 500ml;456789123;2.10
+Desinfetante Pinho Sol 500ml;444555666;8.90
+Limpador Multiuso Veja 500ml;777888999;6.20
+Sabão em Barra Ipê 5 unid;888111222;11.30
+Esponja de Aço Bombril 8 unid;999222333;2.45
+Papel Higiênico Neve 12 rolos;000333444;24.80
+Sabonete Rexona 84g;000444555;2.15
+Creme Dental Colgate 90g;000555666;3.90
+Shampoo Dove Reconstrução 400ml;000666777;16.40
+Condicionador Dove Reconstrução 400ml;000777888;18.20
+Desodorante Rexona Aerosol 150ml;000888999;14.90
+Fio Dental Colgate 50m;000999000;9.10
+Fralda Pampers Confort Sec G 32 unid;111222333;45.90
+Absorvente Always Com Abas 8 unid;222333444;6.50
+Lava Roupas Líquido Ariel 2L;333444555;32.10
+Inseticida SBP Aerosol 300ml;444555666;15.80
+Saco de Lixo Embalixo 50L 10 unid;555666777;9.90
+Cândida/Alvejante Qboa 2L;666777888;6.50
+Queijo Mussarela Fatiada 200g;777888999;12.90
+Presunto Fatiado Sadia 200g;888999000;8.50
+Peito de Peru Fatiado Seara 200g;999000111;14.30
+Filé de Frango Sadia 1kg;111000222;22.90
+Carne Moída Patinho 500g;222000333;25.40
+Salsicha Hot Dog Seara 500g;333000444;8.90
+Pizza Congelada Sadia Calabresa 460g;444000555;15.20
+Lasanha Congelada Seara Bolonhesa 600g;555000666;16.80
+Hambúrguer de Carne Seara 12 unid;666000777;19.90
+Batata Palito Congelada McCain 400g;777000888;14.50

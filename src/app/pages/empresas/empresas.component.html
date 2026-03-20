@@ -1,0 +1,86 @@
+<div class="container animate-in">
+  <div class="header-actions">
+    <div class="title-group">
+      <h1>Gerenciamento de Empresas</h1>
+      <p>Gerencie as lojas parceiras que fornecem listas de preços.</p>
+    </div>
+    <button (click)="addCompany()" class="btn btn-primary">
+      <span>➕</span> Nova Empresa
+    </button>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card glass-card">
+      <div class="stat-header">
+        <span class="stat-title">Empresas Ativas</span>
+        <span class="stat-icon green">🏪</span>
+      </div>
+      <div class="stat-value">{{ activeCompaniesCount }}</div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="stat-header">
+        <span class="stat-title">Total de Produtos</span>
+        <span class="stat-icon blue">📦</span>
+      </div>
+      <div class="stat-value">6,080</div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="stat-header">
+        <span class="stat-title">Atualizações Hoje</span>
+        <span class="stat-icon yellow">⚡</span>
+      </div>
+      <div class="stat-value">2</div>
+    </div>
+  </div>
+
+  <div class="table-container glass-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>Contato</th>
+          <th>Telefone</th>
+          <th>Produtos</th>
+          <th>Status</th>
+          <th>Últ. Upload</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (company of companies; track company.id) {
+          <tr>
+            <td>
+              <div class="company-cell">
+                <div class="company-avatar">{{ company.name.substring(0, 1) }}</div>
+                <div class="company-info">
+                  <div class="name">{{ company.name }}</div>
+                  <div class="id">#{{ company.id }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ company.email }}</td>
+            <td>{{ company.phone }}</td>
+            <td>{{ company.productsCount | number }}</td>
+            <td>
+              <span class="status-badge" [class.success]="company.status === 'Ativo'" [class.error]="company.status === 'Inativo'">
+                {{ company.status }}
+              </span>
+            </td>
+            <td>{{ company.lastUpload }}</td>
+            <td>
+              <div class="actions">
+                <input type="file" #fileInput (change)="onFileUpload($event, company.id)" style="display: none" accept=".csv,.txt">
+                <button class="action-btn" title="Upload Lista (CSV)" (click)="fileInput.click()">📤</button>
+                <button class="action-btn danger">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-table-msg">Nenhuma empresa cadastrada.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

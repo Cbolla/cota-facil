@@ -1,0 +1,45 @@
+<div class="layout-wrapper">
+  <nav class="glass-nav">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">Cota<span>Fácil</span></span>
+      </div>
+      
+      <div class="nav-links">
+        @if (auth.isLoggedIn()) {
+          @if (auth.getRole() === 'ADMIN') {
+            <a routerLink="/admin" routerLinkActive="active" class="nav-link">Admin</a>
+          }
+          @if (auth.getRole() === 'SUPPLIER') {
+            <a routerLink="/vendedor" routerLinkActive="active" class="nav-link">Painel Vendedor</a>
+          }
+          @if (auth.getRole() === 'CLIENT' || auth.getRole() === 'ADMIN') {
+            <a routerLink="/comparador" routerLinkActive="active" class="nav-link">Comparador</a>
+          }
+        } @else {
+          <a routerLink="/login" routerLinkActive="active" class="nav-link">Entrar</a>
+          <a routerLink="/register" routerLinkActive="active" class="nav-link">Cadastrar</a>
+        }
+      </div>
+
+      @if (auth.isLoggedIn()) {
+        <div class="user-profile">
+          <div class="user-info">
+            <span class="user-name">{{ auth.getUser()?.name }}</span>
+            <span class="user-role">{{ auth.getRole() }}</span>
+          </div>
+          <button (click)="auth.logout()" class="btn-logout" title="Sair">🚪</button>
+        </div>
+      }
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="glass-footer">
+    <p>&copy; 2026 CotaFácil - Inteligência em Comparação de Preços</p>
+  </footer>
+</div>
