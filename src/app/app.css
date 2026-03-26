@@ -1,4 +1,4 @@
-﻿.layout-wrapper {
+.layout-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -195,5 +195,40 @@
 
 .logo-icon {
   font-size: 24px;
+}
+
+@media (max-width: 768px) {
+  .glass-nav { 
+    height: auto; 
+    padding: 15px 10px; 
+    position: relative;
+  }
+  .nav-container { 
+    flex-direction: column; 
+    gap: 15px; 
+    padding: 10px;
+  }
+  .logo-text { font-size: 20px; }
+  .logo-icon { width: 32px; height: 32px; font-size: 18px; }
+  
+  .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
+  .nav-link { font-size: 12px; font-weight: 700; }
+  
+  .user-profile { 
+    padding: 6px 15px; 
+    width: auto; 
+    margin: 0 auto;
+  }
+  .user-role { font-size: 8px; }
+  .user-info { align-items: flex-start; }
+
+  .main-content { padding: 10px 0; }
+  .container { padding: 10px; }
+  
+  .glass-footer { 
+    margin-top: 30px; 
+    padding: 24px 15px; 
+    font-size: 11px; 
+  }
 }
 

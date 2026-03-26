@@ -19,12 +19,12 @@ import { AuthService } from '../../services/auth.service';
         <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
           <div class="form-group">
             <label>E-mail</label>
-            <input type="email" name="email" [(ngModel)]="email" required placeholder="seu@email.com">
+            <input type="email" name="email" [(ngModel)]="email" required placeholder="seu@email.com" autocomplete="username">
           </div>
 
           <div class="form-group">
             <label>Senha</label>
-            <input type="password" name="password" [(ngModel)]="password" required placeholder="••••••••">
+            <input type="password" name="password" [(ngModel)]="password" required placeholder="••••••••" autocomplete="current-password">
           </div>
 
           @if (error) {
@@ -75,7 +75,13 @@ import { AuthService } from '../../services/auth.service';
     .btn-primary { width: 100%; margin-top: 10px; }
     .auth-footer { margin-top: 20px; text-align: center; font-size: 14px; }
     .auth-footer a { color: var(--accent); font-weight: 600; text-decoration: none; }
-    .error-msg { color: #f43f5e; font-size: 13px; text-align: center; margin-bottom: 10px; }
+    .error-msg { color: #f43f5e; font-size: 13px; text-align: center; margin-bottom: 15px; background: rgba(244, 63, 94, 0.1); padding: 8px; border-radius: 4px; }
+    
+    @media (max-width: 480px) {
+      .auth-container { height: auto; min-height: 100vh; padding: 10px; }
+      .auth-card { padding: 25px 20px; border-radius: 20px; }
+      .auth-header h2 { font-size: 20px; }
+    }
   `]
 })
 export class LoginComponent {
@@ -90,15 +96,20 @@ export class LoginComponent {
   onSubmit() {
     this.isLoading = true;
     this.error = '';
+    
     this.authService.login({ email: this.email, password: this.password }).subscribe({
-      next: (res) => {
-        const role = res.user.role;
-        if (role === 'ADMIN') this.router.navigate(['/admin']);
-        else if (role === 'SUPPLIER') this.router.navigate(['/vendedor']);
-        else this.router.navigate(['/comparador']);
+      next: () => {
+        // Aguarda o user$ carregar os dados do Firestore
+        this.authService.user$.subscribe(user => {
+          if (user) {
+            if (user.role === 'ADMIN') this.router.navigate(['/admin']);
+            else if (user.role === 'SUPPLIER') this.router.navigate(['/vendedor']);
+            else this.router.navigate(['/comparador']);
+          }
+        });
       },
       error: (err) => {
-        this.error = 'E-mail ou senha inválidos';
+        this.error = err.message || 'E-mail ou senha inválidos';
         this.isLoading = false;
       }
     });

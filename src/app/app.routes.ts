@@ -16,6 +16,11 @@ export const routes: Routes = [
     canActivate: [roleGuard(['CLIENT', 'ADMIN'])] 
   },
   { 
+    path: 'historico', 
+    loadComponent: () => import('./pages/historico/historico.component').then(m => m.HistoricoComponent), 
+    canActivate: [roleGuard(['CLIENT', 'ADMIN'])] 
+  },
+  { 
     path: 'vendedor', 
     component: SupplierComponent, 
     canActivate: [roleGuard(['SUPPLIER', 'ADMIN'])] 

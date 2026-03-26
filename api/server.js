@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const stringSimilarity = require('string-similarity');
-const { sequelize, User, Company, InventoryItem, AccessRequest, ProductMapping } = require('./db');
+const { sequelize, User, Company, InventoryItem, AccessRequest, ProductMapping, SavedQuote } = require('./db');
 const { authenticate, authorize, SECRET } = require('./auth');
 
 const app = express();
@@ -224,6 +224,40 @@ app.post('/api/client/compare', authenticate, authorize('CLIENT'), async (req, r
   });
 
   res.json(results);
+});
+
+// -- SAVED QUOTES ROUTES --
+app.get('/api/client/saved-quotes', authenticate, authorize('CLIENT'), async (req, res) => {
+  const quotes = await SavedQuote.findAll({ where: { clientId: req.user.id } });
+  res.json(quotes);
+});
+
+app.post('/api/client/save-quote', authenticate, authorize('CLIENT'), async (req, res) => {
+  try {
+    const { name, items, total } = req.body;
+    if (!name || !items || !total) return res.status(400).json({ error: 'Name, items and total required' });
+    
+    const quote = await SavedQuote.create({ 
+      name, 
+      items, 
+      total, 
+      clientId: req.user.id 
+    });
+    res.status(201).json(quote);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao salvar cotacao: ' + err.message });
+  }
+});
+
+app.delete('/api/client/saved-quotes/:id', authenticate, authorize('CLIENT'), async (req, res) => {
+  try {
+    const quote = await SavedQuote.findOne({ where: { id: req.params.id, clientId: req.user.id } });
+    if (!quote) return res.status(404).json({ error: 'Cotacao nao encontrada' });
+    await quote.destroy();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao deletar cotacao' });
+  }
 });
 
 // -- ADMIN ROUTES --

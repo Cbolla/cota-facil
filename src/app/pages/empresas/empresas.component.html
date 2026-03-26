@@ -39,10 +39,8 @@
         <tr>
           <th>Empresa</th>
           <th>Contato</th>
-          <th>Telefone</th>
           <th>Produtos</th>
           <th>Status</th>
-          <th>Últ. Upload</th>
           <th>Ações</th>
         </tr>
       </thead>
@@ -59,28 +57,72 @@
               </div>
             </td>
             <td>{{ company.email }}</td>
-            <td>{{ company.phone }}</td>
-            <td>{{ company.productsCount | number }}</td>
             <td>
-              <span class="status-badge" [class.success]="company.status === 'Ativo'" [class.error]="company.status === 'Inativo'">
+              <button class="view-prods-btn" (click)="viewProducts(company)">
+                📦 {{ company.productsCount | number }} itens
+              </button>
+            </td>
+            <td>
+              <span class="status-badge" [class.success]="company.status === 'Ativo'">
                 {{ company.status }}
               </span>
             </td>
-            <td>{{ company.lastUpload }}</td>
             <td>
               <div class="actions">
                 <input type="file" #fileInput (change)="onFileUpload($event, company.id)" style="display: none" accept=".csv,.txt">
-                <button class="action-btn" title="Upload Lista (CSV)" (click)="fileInput.click()">📤</button>
+                <button class="action-btn" title="Upload Lista" (click)="fileInput.click()">📤</button>
+                <button class="action-btn excel" title="Baixar Excel" (click)="downloadCatalog(company.id, company.name)">📊</button>
                 <button class="action-btn danger">🗑️</button>
               </div>
             </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="7" class="empty-table-msg">Nenhuma empresa cadastrada.</td>
           </tr>
         }
       </tbody>
     </table>
   </div>
+
+  <!-- MODAL DE PRODUTOS PREMIUM -->
+  @if (selectedCompanyForView) {
+    <div class="modal-overlay animate-in" (click)="selectedCompanyForView = null">
+      <div class="modal-content glass-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="h-title">
+            <h2>Produtos: {{ selectedCompanyForView.name }}</h2>
+            <p>Lista completa de itens cadastrados no catálogo.</p>
+          </div>
+          <button class="close-btn" (click)="selectedCompanyForView = null">✕</button>
+        </div>
+        
+        <div class="modal-body scroll-area">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>Nome do Produto</th>
+                <th width="120">Preço</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of companyProducts; track p.id) {
+                <tr>
+                  <td>{{ p.name }}</td>
+                  <td><strong class="price-tag">{{ p.price | currency:'BRL' }}</strong></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="2" class="empty-state">Nenhum produto encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="downloadCatalog(selectedCompanyForView.id, selectedCompanyForView.name)">
+             📊 Baixar Excel
+          </button>
+          <button class="btn btn-primary" (click)="selectedCompanyForView = null">Fechar</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

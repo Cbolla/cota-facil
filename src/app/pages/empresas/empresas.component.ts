@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CotaService } from '../../services/cota.service';
+import { ExcelService } from '../../services/excel.service';
 
 interface Company {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -21,7 +22,10 @@ interface Company {
 })
 export class EmpresasComponent implements OnInit {
   private cotaService = inject(CotaService);
+  private excelService = inject(ExcelService);
   companies: Company[] = [];
+  selectedCompanyForView: any = null;
+  companyProducts: any[] = [];
 
   ngOnInit() {
     this.loadCompanies();
@@ -32,11 +36,19 @@ export class EmpresasComponent implements OnInit {
       next: (data: any[]) => {
         this.companies = data.map((c: any) => ({
           ...c,
+          productsCount: 0, // Inicia zerado e atualiza abaixo
           email: 'contato@' + c.name.toLowerCase().replace(/\s/g, '') + '.com',
           phone: '(11) 9' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.floor(1000 + Math.random() * 9000),
           status: 'Ativo',
           lastUpload: new Date().toLocaleDateString('pt-BR')
         }));
+
+        // Busca as contagens individualmente
+        this.companies.forEach(company => {
+          this.cotaService.getProdutosByEmpresa(company.id).subscribe(prods => {
+            company.productsCount = prods.length;
+          });
+        });
       },
       error: (err: any) => console.error('Error fetching companies:', err)
     });
@@ -56,7 +68,16 @@ export class EmpresasComponent implements OnInit {
     });
   }
 
-  onFileUpload(event: any, companyId: number) {
+  viewProducts(company: any) {
+    this.selectedCompanyForView = company;
+    this.companyProducts = []; 
+    this.cotaService.getProdutosByEmpresa(company.id).subscribe({
+      next: (prods) => this.companyProducts = prods,
+      error: (err) => console.error('Error loading products:', err)
+    });
+  }
+
+  onFileUpload(event: any, companyId: string) {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -84,5 +105,18 @@ export class EmpresasComponent implements OnInit {
       });
     };
     reader.readAsText(file);
+  }
+
+  downloadCatalog(companyId: string, companyName: string) {
+    this.cotaService.getEmpresaById(companyId).subscribe({
+      next: (data: any) => {
+        if (data.inventory && data.inventory.length > 0) {
+          this.excelService.exportInventory(data.inventory, companyName);
+        } else {
+          alert('Este fornecedor ainda não possui produtos cadastrados.');
+        }
+      },
+      error: (err: any) => alert('Erro ao buscar catálogo: ' + err.message)
+    });
   }
 }

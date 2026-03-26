@@ -40,6 +40,14 @@ const ProductMapping = sequelize.define('ProductMapping', {
   status: { type: Sequelize.STRING, defaultValue: 'PENDING' } // PENDING, APPROVED
 });
 
+const SavedQuote = sequelize.define('SavedQuote', {
+  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+  name: { type: DataTypes.STRING, allowNull: false },
+  items: { type: DataTypes.JSON, allowNull: false }, // Store results as JSON
+  total: { type: DataTypes.FLOAT, allowNull: false },
+  date: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+});
+
 // Relationships
 User.hasOne(Company, { foreignKey: 'userId', as: 'managedCompany' });
 Company.belongsTo(User, { foreignKey: 'userId' });
@@ -53,4 +61,7 @@ AccessRequest.belongsTo(User, { foreignKey: 'clientId', as: 'client' });
 Company.hasMany(AccessRequest, { foreignKey: 'companyId', as: 'accessRequests' });
 AccessRequest.belongsTo(Company, { foreignKey: 'companyId' });
 
-module.exports = { sequelize, User, Company, InventoryItem, AccessRequest, ProductMapping };
+User.hasMany(SavedQuote, { foreignKey: 'clientId', as: 'savedQuotes' });
+SavedQuote.belongsTo(User, { foreignKey: 'clientId', as: 'client' });
+
+module.exports = { sequelize, User, Company, InventoryItem, AccessRequest, ProductMapping, SavedQuote };

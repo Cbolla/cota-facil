@@ -29,12 +29,12 @@ import { AuthService } from '../../services/auth.service';
 
           <div class="form-group">
             <label>E-mail</label>
-            <input type="email" name="email" [(ngModel)]="email" required placeholder="seu@email.com">
+            <input type="email" name="email" [(ngModel)]="email" required placeholder="seu@email.com" autocomplete="username">
           </div>
 
           <div class="form-group">
             <label>Senha</label>
-            <input type="password" name="password" [(ngModel)]="password" required placeholder="••••••••">
+            <input type="password" name="password" [(ngModel)]="password" required placeholder="••••••••" autocomplete="new-password">
           </div>
 
           @if (error) {
@@ -68,9 +68,15 @@ import { AuthService } from '../../services/auth.service';
     .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
     input { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 8px; color: #fff; outline: none; }
     .btn-primary { width: 100%; }
-    .error-msg { color: #f43f5e; font-size: 13px; text-align: center; margin-bottom: 10px; }
+    .error-msg { color: #f43f5e; font-size: 13px; text-align: center; margin-bottom: 15px; background: rgba(244, 63, 94, 0.1); padding: 8px; border-radius: 4px; }
     .auth-footer { margin-top: 20px; text-align: center; }
     .auth-footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    
+    @media (max-width: 480px) {
+      .auth-container { min-height: 100vh; padding: 15px; }
+      .auth-card { padding: 25px 20px; border-radius: 20px; }
+      .role-selector { flex-direction: column; }
+    }
   `]
 })
 export class RegisterComponent {
@@ -86,13 +92,14 @@ export class RegisterComponent {
 
   onSubmit() {
     this.isLoading = true;
+    this.error = '';
     this.authService.register({ name: this.name, email: this.email, password: this.password, role: this.role }).subscribe({
       next: () => {
-        alert('Conta criada com sucesso! Faça login para continuar.');
-        this.router.navigate(['/login']);
+        if (this.role === 'SUPPLIER') this.router.navigate(['/vendedor']);
+        else this.router.navigate(['/comparador']);
       },
       error: (err) => {
-        this.error = 'Erro ao criar conta. Tente outro e-mail.';
+        this.error = err.message || 'Erro ao criar conta. Tente outro e-mail.';
         this.isLoading = false;
       }
     });

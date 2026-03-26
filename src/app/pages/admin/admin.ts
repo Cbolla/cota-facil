@@ -110,10 +110,18 @@ import { CotaService } from '../../services/cota.service';
     .action-btn.approve { background: #10b981; color: #fff; }
 
     .empty-cell { text-align: center; padding: 40px !important; color: var(--text-muted); font-style: italic; }
+    
+    @media (max-width: 768px) {
+      .admin-container { padding: 20px 10px; }
+      .header-section { padding: 20px; text-align: center; }
+      .header-section h1 { font-size: 22px; }
+      .panel-item { padding: 15px; }
+      .data-table th, .data-table td { padding: 10px 8px; font-size: 13px; }
+      .action-btn { width: 100%; padding: 12px; }
+    }
   `]
 })
 export class AdminComponent implements OnInit {
-  private http = inject(HttpClient);
   private cotaService = inject(CotaService);
   
   users: any[] = [];
@@ -124,11 +132,11 @@ export class AdminComponent implements OnInit {
   }
 
   loadData() {
-    this.http.get<any[]>('http://localhost:3000/api/admin/users').subscribe(data => this.users = data);
+    this.cotaService.getAllUsers().subscribe(data => this.users = data);
     this.cotaService.getPendingMappings().subscribe(data => this.pendingMappings = data);
   }
 
-  approve(id: number) {
+  approve(id: string) {
     this.cotaService.approveMapping(id).subscribe({
       next: () => {
         alert('Vínculo aprovado! Agora o sistema fará o pareamento automático para este nome.');
