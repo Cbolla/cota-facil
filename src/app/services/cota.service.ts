@@ -83,65 +83,161 @@ export class CotaService {
   }
 
   private async processarComparacao(minhaLista: any[], companyId?: string): Promise<any[]> {
-    let todasEmpresas: any[] = [];
-    
+    const results: any[] = [];
+    const itemMap = new Map<string, any>(); // Cache results for duplicates
+
+    // 1. Fetch ALL relevant products ONCE
+    let allProducts: any[] = [];
     if (companyId) {
-      const empresaDoc = await getDoc(doc(this.firestore, 'empresas', companyId));
-      if (empresaDoc.exists()) {
-        todasEmpresas = [{ id: empresaDoc.id, ...empresaDoc.data() as any }];
-      }
+      const snap = await getDocs(collection(this.firestore, `empresas/${companyId}/produtos`));
+      const empSnap = await getDoc(doc(this.firestore, 'empresas', companyId));
+      const empName = empSnap.exists() ? (empSnap.data() as any).name : 'Loja';
+      allProducts = snap.docs.map(d => ({ ...d.data() as any, id: d.id, empresaNome: empName }));
     } else {
       const empresasSnap = await getDocs(collection(this.firestore, 'empresas'));
-      todasEmpresas = empresasSnap.docs.map(d => ({ id: d.id, ...d.data() as any }));
+      for (const empDoc of empresasSnap.docs) {
+        const pSnap = await getDocs(collection(this.firestore, `empresas/${empDoc.id}/produtos`));
+        allProducts.push(...pSnap.docs.map(d => ({ 
+          ...d.data() as any, 
+          id: d.id, 
+          empresaNome: (empDoc.data() as any).name 
+        })));
+      }
     }
-    
-    const results: any[] = [];
 
-    for (const item of minhaLista) {
+    // 2. Index inventory by Barcode for O(1) lookup + pre-process for fuzzy
+    const barcodeIndex = new Map<string, any>();
+    const processedInventory = allProducts.map(p => {
+      const processed = {
+        ...p,
+        lowName: p.name.toLowerCase(),
+        tokens: new Set(p.name.toLowerCase().split(/\s+/).filter((t: string) => t.length > 2)),
+        vol: this.extractVolume(p.name.toLowerCase())
+      };
+      if (p.barcode) {
+        barcodeIndex.set(p.barcode.toString().trim(), processed);
+      }
+      return processed;
+    });
+
+    // 3. Process each requested item
+    for (const rawItem of minhaLista) {
+      const originalItem = rawItem.toString().trim();
+      if (!originalItem) continue;
+      
+      // Parse "Name | Barcode"
+      let itemName = originalItem;
+      let itemBarcode = '';
+      if (originalItem.includes('|')) {
+        const parts = originalItem.split('|');
+        itemName = parts[0].trim();
+        itemBarcode = parts[1].trim();
+      }
+
+      const itemLower = itemName.toLowerCase();
+      const cacheKey = itemBarcode ? `bc:${itemBarcode}` : `nm:${itemLower}`;
+      
+      if (itemMap.has(cacheKey)) {
+        results.push({ ...itemMap.get(cacheKey), requested: itemName });
+        continue;
+      }
+
+      let bestMatch: any = null;
       let matches: any[] = [];
-      const itemToCompare = item.toString().toLowerCase();
 
-      for (const empresa of todasEmpresas) {
-        const produtosSnap = await getDocs(collection(this.firestore, `empresas/${empresa.id}/produtos`));
-        const produtos = produtosSnap.docs.map(d => ({ id: d.id, ...d.data() as any }));
+      // PRIORITY 1: Exact Barcode Match
+      if (itemBarcode && barcodeIndex.has(itemBarcode)) {
+        const p = barcodeIndex.get(itemBarcode);
+        bestMatch = {
+          empresaNome: p.empresaNome,
+          produtoNome: p.name,
+          preco: p.price,
+          similarity: 1.0,
+          method: 'BARCODE'
+        };
+      } else {
+        // PRIORITY 2: Fuzzy Name Match
+        const itemVol = this.extractVolume(itemLower);
+        const itemTokens = itemLower.split(/\s+/).filter((t: string) => t.length > 2);
 
-        for (const p of produtos) {
-          const similarity = this.calculateEnhancedSimilarity(
-            itemToCompare,
-            p.name.toLowerCase()
-          );
+        for (const p of processedInventory) {
+          // FAST FILTER: Must share at least one keyword (brand/type)
+          let sharesToken = false;
+          for (const token of itemTokens) {
+            if (p.tokens.has(token)) {
+              sharesToken = true;
+              break;
+            }
+          }
+          if (!sharesToken && itemTokens.length > 0) continue;
 
-          if (similarity > 0.35) { // Adjusted threshold for enhanced scoring
-            matches.push({
-              empresaNome: empresa.name,
+          const similarity = this.calculateEnhancedSimilarityFast(itemLower, itemVol, p.lowName, p.vol);
+
+          if (similarity > 0.35) {
+            const match = {
+              empresaNome: p.empresaNome,
               produtoNome: p.name,
               preco: p.price,
-              similarity
-            });
+              similarity,
+              method: 'FUZZY'
+            };
+            matches.push(match);
+            
+            if (similarity > 0.98) { // EARLY EXIT: Perfect match
+              bestMatch = match;
+              break;
+            }
           }
         }
       }
 
-      matches.sort((a, b) => b.similarity - a.similarity);
-      
-      const best = matches[0];
-      const status: 'CERTO' | 'DUVIDA' | 'NAO_ENCONTRADO' = 
-        !best ? 'NAO_ENCONTRADO' : 
-        best.similarity > 0.85 ? 'CERTO' : 
-        best.similarity < 0.3 ? 'NAO_ENCONTRADO' : 'DUVIDA';
+      if (!bestMatch && matches.length > 0) {
+        matches.sort((a, b) => b.similarity - a.similarity);
+        bestMatch = matches[0];
+      }
 
-      results.push({
-        requested: item,
-        matchedProduct: best ? best.produtoNome : null,
-        companyName: best ? best.empresaNome : 'Não encontrado',
-        price: best ? best.preco : 0,
-        score: best ? best.similarity : 0,
+      const status: 'CERTO' | 'DUVIDA' | 'NAO_ENCONTRADO' = 
+        !bestMatch ? 'NAO_ENCONTRADO' : 
+        bestMatch.similarity > 0.85 ? 'CERTO' : 
+        bestMatch.similarity < 0.3 ? 'NAO_ENCONTRADO' : 'DUVIDA';
+
+      const finalRes = {
+        requested: itemName,
+        matchedProduct: bestMatch ? bestMatch.produtoNome : null,
+        companyName: bestMatch ? bestMatch.empresaNome : 'Não encontrado',
+        price: bestMatch ? bestMatch.preco : 0,
+        score: bestMatch ? bestMatch.similarity : 0,
         status: status,
+        method: bestMatch ? bestMatch.method : 'NONE',
         opcoes: matches.slice(0, 3)
-      });
+      };
+
+      itemMap.set(cacheKey, finalRes);
+      results.push(finalRes);
     }
 
     return results;
+  }
+
+  private calculateEnhancedSimilarityFast(str1: string, vol1: string | null, str2: string, vol2: string | null): number {
+    // 1. Base Score
+    let score = stringSimilarity.compareTwoStrings(str1, str2);
+
+    // 2. Volume Conflict (Pre-calculated vols used here)
+    if (vol1 && vol2) {
+      if (vol1 !== vol2) {
+        score -= 0.6; // High penalty
+      } else {
+        score += 0.2; // High bonus
+      }
+    } else if ((vol1 && !vol2) || (!vol1 && vol2)) {
+      score -= 0.15;
+    }
+
+    // 3. Exact Phrase
+    if (str1.includes(str2) || str2.includes(str1)) score += 0.15;
+
+    return Math.min(Math.max(score, 0), 1);
   }
 
   private calculateEnhancedSimilarity(str1: string, str2: string): number {
@@ -234,6 +330,7 @@ export class CotaService {
       await setDoc(prodRef, {
         name: item.name,
         price: item.price,
+        barcode: item.barcode || '',
         unit: item.unit || 'un',
         updatedAt: Timestamp.now()
       });

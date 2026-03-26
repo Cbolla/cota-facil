@@ -13,6 +13,7 @@ export interface ComparisonResult {
   price: number;
   score: number;
   status: 'CERTO' | 'DUVIDA' | 'NAO_ENCONTRADO';
+  method?: 'BARCODE' | 'FUZZY' | 'NONE';
 }
 
 @Component({
@@ -134,7 +135,12 @@ export interface ComparisonResult {
               @for (res of filteredResults; track $index) {
                 <div class="modern-res-card" [class]="res.status.toLowerCase()">
                   <div class="res-meta">
-                    <span class="res-status-tag">{{ res.status }}</span>
+                    <div class="res-tags">
+                      <span class="res-status-tag">{{ res.status }}</span>
+                      @if (res.method === 'BARCODE') {
+                        <span class="res-method-tag barcode">🛡️ EAN MATCH</span>
+                      }
+                    </div>
                     <div class="res-requested">{{ res.requested }}</div>
                   </div>
 
@@ -211,10 +217,13 @@ export interface ComparisonResult {
                     <tr>
                       <th class="idx-col">#</th>
                       @for (cell of previewData[0]; track $index) {
-                        <th [class.selected]="$index === selectedProdCol" 
-                            (click)="selectedProdCol = $index"
+                        <th [class.sel-name]="$index === selectedProdCol" 
+                            [class.sel-barcode]="$index === selectedBarcodeCol"
+                            (click)="selectColumn($index)"
                             class="clickable-header">
-                          Col {{ $index + 1 }}
+                          @if ($index === selectedProdCol) { 🏷️ Nome }
+                          @else if ($index === selectedBarcodeCol) { 🔍 EAN }
+                          @else { Col {{ $index + 1 }} }
                         </th>
                       }
                     </tr>
@@ -224,8 +233,11 @@ export interface ComparisonResult {
                       <tr [class.ignored-manually]="ignoredRows.has($index)"
                           (click)="toggleRow($index)">
                         <td class="idx-col">{{ $index }}</td>
-                        @for (cell of row; track $index) {
-                          <td [class.selected]="$index === selectedProdCol">{{ cell }}</td>
+                        @for (cell of row; track $index; let colIdx = $index) {
+                          <td [class.sel-name]="colIdx === selectedProdCol"
+                              [class.sel-barcode]="colIdx === selectedBarcodeCol">
+                            {{ cell }}
+                          </td>
                         }
                       </tr>
                     }
@@ -238,8 +250,14 @@ export interface ComparisonResult {
             </div>
 
             <div class="modal-footer">
-              <button class="btn btn-secondary" (click)="showImportModal = false">Cancelar</button>
-              <button class="btn btn-primary" (click)="confirmImport()">Importar Agora</button>
+              <div class="selection-status">
+                <span [class.ok]="selectedProdCol !== -1">🏷️ Nome: {{ selectedProdCol !== -1 ? 'Col ' + (selectedProdCol + 1) : 'Não Selecionada' }}</span>
+                <span [class.ok]="selectedBarcodeCol !== -1">🔍 EAN: {{ selectedBarcodeCol !== -1 ? 'Col ' + (selectedBarcodeCol + 1) : 'Não Selecionada' }}</span>
+              </div>
+              <div class="f-btns">
+                <button class="btn btn-secondary" (click)="showImportModal = false">Cancelar</button>
+                <button class="btn btn-primary" (click)="confirmImport()" [disabled]="selectedProdCol === -1">Importar Agora</button>
+              </div>
             </div>
           </div>
         </div>
@@ -386,8 +404,12 @@ export interface ComparisonResult {
       margin-bottom: 20px; display: grid; grid-template-columns: 1fr 240px 120px;
       align-items: center; border: 1px solid rgba(255,255,255,0.05); position: relative;
     }
-    .res-meta { display: flex; flex-direction: column; gap: 5px; }
+    .res-meta { display: flex; flex-direction: column; gap: 8px; }
+    .res-tags { display: flex; gap: 6px; align-items: center; }
     .res-status-tag { font-size: 9px; font-weight: 900; background: rgba(255,255,255,0.1); width: fit-content; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+    .res-method-tag { font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; display: flex; align-items: center; gap: 3px; }
+    .res-method-tag.barcode { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+    
     .res-requested { font-weight: 700; color: #fff; font-size: 15px; }
     
     .store-tag { font-size: 10px; color: var(--accent); font-weight: 800; text-transform: uppercase; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
@@ -437,8 +459,17 @@ export interface ComparisonResult {
     .preview-table th.clickable-header { cursor: pointer; transition: all 0.2s; }
     .preview-table th.clickable-header:hover { background: rgba(124, 115, 255, 0.1); color: #fff; }
     .preview-table td { padding: 10px 12px; border: 1px solid var(--glass-border); color: #fff; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
-    .preview-table th.selected { background: var(--accent) !important; color: #000 !important; }
-    .preview-table td.selected { background: rgba(124, 115, 255, 0.1); color: var(--accent); opacity: 1; font-weight: 600; }
+    .preview-table th.sel-name { background: #10b981 !important; color: #000 !important; }
+    .preview-table td.sel-name { background: rgba(16, 185, 129, 0.1); color: #10b981; font-weight: 600; }
+    
+    .preview-table th.sel-barcode { background: #3b82f6 !important; color: #fff !important; }
+    .preview-table td.sel-barcode { background: rgba(59, 130, 246, 0.1); color: #3b82f6; font-weight: 600; }
+
+    .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 20px 25px; }
+    .selection-status { display: flex; gap: 15px; font-size: 11px; font-weight: 700; color: var(--text-muted); }
+    .selection-status span.ok { color: #fff; }
+    .f-btns { display: flex; gap: 10px; }
+
     .preview-table tr.skipped td { opacity: 0.2; text-decoration: line-through; filter: grayscale(1); }
     .preview-table tr.ignored-manually td { background: rgba(244, 63, 94, 0.1) !important; color: #f43f5e !important; text-decoration: line-through; }
     .idx-col { width: 40px; text-align: center !important; background: rgba(0,0,0,0.3) !important; color: var(--text-muted); font-size: 10px; }
@@ -473,6 +504,7 @@ export class ComparadorComponent implements OnInit {
   previewData: any[][] = [];
   skipRows = 0;
   selectedProdCol = 0;
+  selectedBarcodeCol = -1;
   rawWorkbookData: any[][] = [];
   ignoredRows: Set<number> = new Set();
   activeFilter: string = 'all';
@@ -548,11 +580,33 @@ export class ComparadorComponent implements OnInit {
     }
   }
 
+  selectColumn(idx: number) {
+    if (this.selectedProdCol === idx) {
+      this.selectedProdCol = -1;
+    } else if (this.selectedBarcodeCol === idx) {
+      this.selectedBarcodeCol = -1;
+    } else {
+      if (this.selectedProdCol === -1) this.selectedProdCol = idx;
+      else if (this.selectedBarcodeCol === -1) this.selectedBarcodeCol = idx;
+      else {
+        // Se ja tem os dois, rotaciona o de nome
+        this.selectedProdCol = idx;
+      }
+    }
+  }
+
   confirmImport() {
     const products = this.rawWorkbookData
       .filter((_, idx) => !this.ignoredRows.has(idx))
-      .map(row => row[this.selectedProdCol])
-      .filter(p => p && p.toString().trim() !== '' && !['CERTO','DUVIDA','NAO_ENCONTRADO','STATUS','PRODUTO','ITEM'].includes(p.toString().toUpperCase()));
+      .map(row => {
+        const name = row[this.selectedProdCol] || '';
+        const barcode = this.selectedBarcodeCol !== -1 ? row[this.selectedBarcodeCol] : '';
+        return barcode ? `${name} | ${barcode}` : name;
+      })
+      .filter(p => {
+        const str = p.toString().trim().toUpperCase();
+        return str !== '' && !['CERTO','DUVIDA','NAO_ENCONTRADO','STATUS','PRODUTO','ITEM','DESCRIÇÃO','NOME'].includes(str);
+      });
     
     this.userInput = products.join('\n');
     this.showImportModal = false;
